@@ -1,0 +1,45 @@
+.start-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-image: url('../assets/carlos-ToNqdoVHVJ0-unsplash.jpg'); 
+    background-size: cover;
+    background-position: center;
+    color: white;
+    text-align: center;
+  }
+  
+  .profile-image-container {
+    width: 180px; /* Adjust size as needed */
+    height: 180px; /* Adjust size as needed */
+    border-radius: 50%; /* Make it circular */
+    overflow: hidden; /* Clip the image to the circle */
+    margin-bottom: 1em;
+  }
+  
+  .profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the container */
+  }
+  
+  h1 {
+    font-size: 3em;
+    margin-bottom: 0.5em;
+  }
+  
+  p {
+    font-size: 1.2em;
+    margin-bottom: 1.5em;
+  }
+  
+  button {
+    padding: 1em 2em;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    /* Add more button styles later */
+  }
