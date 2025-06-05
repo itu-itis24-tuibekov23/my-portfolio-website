@@ -95,6 +95,17 @@ html, body {
   margin-top: 40px;           /* Space between the previous section's content and this line */
 }
 
+.main-content h2 {
+    color: black; // Specific for section headings
+    margin-bottom: 20px;
+}
+
+.main-content p {
+    color: #555; // Slightly lighter black for body paragraphs
+    line-height: 1.6;
+    font-weight: bold;
+}
+
 /* Ensure the very first section ("About Me") doesn't get this border/padding/margin */
 .main-content section#about {
     margin-top: 0;

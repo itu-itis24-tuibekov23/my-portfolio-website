@@ -4,42 +4,77 @@
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background-image: url('../assets/carlos-ToNqdoVHVJ0-unsplash.jpg'); 
+    background-image: url('/carlos-ToNQdoVHVJ0-unsplash.jpg');
     background-size: cover;
     background-position: center;
-    color: white;
+    background-repeat: no-repeat;
+    color: white; // Ensure text is visible on this background
     text-align: center;
-  }
-  
-  .profile-image-container {
+}
+
+/* Styles for the profile image container on the StartPage */
+.profile-image-container-startpage { // This is the wrapper div for the image
+    margin-bottom: 20px; // Space below the image
     width: 180px; /* Adjust size as needed */
     height: 180px; /* Adjust size as needed */
-    border-radius: 50%; /* Make it circular */
+    border-radius: 50%; /* Make the container perfectly circular */
     overflow: hidden; /* Clip the image to the circle */
-    margin-bottom: 1em;
-  }
-  
-  .profile-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Ensure the image covers the container */
-  }
-  
-  h1 {
+    border: 4px solid rgba(0, 0, 0, 0.8); // Optional: a subtle white border
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); // Optional: a subtle shadow
+}
+
+/* Styles for the actual profile image on the StartPage */
+.startpage-profile-image { // This is the <img> tag itself
+    width: 100%; // Make the image fill its circular container
+    height: 100%; // Make the image fill its circular container
+    object-fit: cover; /* Crucial: scales the image to cover the area without distortion */
+    border-radius: 50%; // Makes the image itself circular (though container already clips)
+    display: block; // Ensures no extra space around the image
+}
+
+/* General styles for headings and paragraphs on StartPage */
+h1 {
     font-size: 3em;
     margin-bottom: 0.5em;
-  }
-  
-  p {
+    color: white; // Ensure headings are visible
+    text-shadow: 2px 2px 4px rgba(255,255,255,0.5); // Add subtle shadow for readability
+}
+
+p {
     font-size: 1.2em;
     margin-bottom: 1.5em;
-  }
-  
-  button {
+    color: rgba(255, 255, 255, 0.9); // Slightly transparent white for body text
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.4); // Add subtle shadow for readability
+}
+
+/* Styles for the "Know more" button on StartPage */
+.know-more-button { /* Using the class you gave it in StartPage.tsx */
     padding: 1em 2em;
     font-size: 1em;
     border: none;
-    border-radius: 5px;
+    border-radius: 25px; // More rounded button shape
     cursor: pointer;
-    /* Add more button styles later */
-  }
+    background-color: #20c997; // A vibrant green (example, choose your theme color)
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease; // Smooth hover effects
+
+    &:hover {
+        background-color: #17a26b; // Darker green on hover
+        transform: translateY(-2px); // Slight lift on hover
+    }
+}
+
+.profile-image-container { /* */
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 1em;
+}
+
+.profile-image { /* */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

@@ -1,25 +1,27 @@
-import React from 'react';
+// src/pages/StartPage.tsx
+import { Link } from 'react-router-dom';
 import '../styles/StartPage.scss';
-import profileImage from '../assets/Sanzhar_Tuibekovv.jpg';
-import { useNavigate } from 'react-router-dom'; 
 
 function StartPage() {
-    const navigate = useNavigate();
-  
-    const handleKnowMoreClick = () => {
-      navigate('/inner'); // Define the path for your Inner Page
-    };
-  
-    return (
-      <div className="start-page">
-        <div className="profile-image-container">
-          <img src={profileImage} alt="Your Profile" className="profile-image" />
-        </div>
-        <h1>Sanzhar Tuibekov</h1>
-        <p>Programmer. Athlete. Innovator. Active hiker</p>
-        <button onClick={handleKnowMoreClick}>Know more</button>
+  return (
+    <div className="start-page">
+      <div className="profile-image-container-startpage">
+        <img
+          src="/Sanzhar_Tuibekovv.jpg" // Image from public folder
+          alt="Sanzhar Tuibekov"
+          className="startpage-profile-image"
+        />
       </div>
-    );
-  }
-  
-  export default StartPage;
+      <h1>Sanzhar Tuibekov</h1>
+      <p className="subtitle">AI & Web Developer | Creative | Innovator</p>
+      <p className="intro-text">
+        Passionate about building impactful software and exploring cutting-edge AI.
+      </p>
+      <Link to="/portfolio">
+        <button className="know-more-button">Know more</button>
+      </Link>
+    </div>
+  );
+}
+
+export default StartPage;

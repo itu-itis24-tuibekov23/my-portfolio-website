@@ -1,6 +1,6 @@
-import React, { useState, useEffect, createRef } from 'react';
+import { useState, useEffect, createRef } from 'react';
 import '../styles/InnerPage.scss';
-import profileImage from '../assets/Sanzhar_Tuibekovv.jpg'; // Ensure this path is correct for your image
+// import profileImage from '/Sanzhar_Tuibekovv.jpg';
 
 function InnerPage() {
   const sectionRefs = {
@@ -97,7 +97,7 @@ function InnerPage() {
         <div className="profile-section">
           <div className="profile-image-container">
             <img
-              src={profileImage}
+              src="/Sanzhar_Tuibekovv.jpg"
               alt="Your Profile"
               className="profile-image"
             />
