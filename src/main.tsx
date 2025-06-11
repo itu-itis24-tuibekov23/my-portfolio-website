@@ -2,8 +2,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import './index.css'; // Make sure src/index.css exists, otherwise remove this line.
+import './index.css';
 import { BrowserRouter } from 'react-router-dom';
+
+import { Provider } from 'react-redux';          // ✅ Redux Provider
+import { store } from './store';                // ✅ Redux Store
 
 // Import and initialize the mock server
 import { makeServer } from './services/server.js';
@@ -15,8 +18,10 @@ if (import.meta.env.DEV) {
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <Provider store={store}>                    {/* ✅ Wrap App in Redux Provider */}
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </Provider>
   </React.StrictMode>,
 );
