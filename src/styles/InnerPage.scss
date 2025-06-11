@@ -1,557 +1,403 @@
-/* Universal reset for margins and paddings for the page */
-html, body {
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden; /* Prevent horizontal scroll if content overflows */
-  }
+/* src/styles/InnerPage.scss */
 
-  body {
-    font-family: Arial, sans-serif;
-  }
-
-  .inner-page-container {
+/* General Layout */
+.inner-page-container {
     display: flex;
-    min-height: 100vh;
-    background-color: #f8f8f8; /* Light grey background for the whole page */
   }
-
+  
+  /* Sidebar Styling */
   .sidebar {
-    background-color: #f8f9fa; /* Light grey background for the sidebar */
-    width: 350px;
-    color: #333; /* Default text color for sidebar elements */
-    padding: 30px;
+    background-color: #f8f9fa; /* Light background for sidebar */
+    color: #333;
+    width: 250px;
+    min-height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(0);
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .sidebar-hidden {
+    transform: translateX(-100%);
+  }
+  
+  /* Profile Section in Sidebar */
+  .profile-section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition: width 0.3s ease;
-
-    .profile-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 0; /* Removed the space below the profile section */
-
-      .profile-image-container {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        overflow: hidden;
-        margin-bottom: 15px;
-        border: 3px solid #555;
-      }
-
-      h2 {
-        margin-top: 10px;
-        font-size: 1.8em;
-        color: #333; /* Dark color for the name */
-        text-align: center;
-      }
-    }
-
-    .main-navigation ul li a {
-      display: block;
-      padding: 12px 20px;
-      text-decoration: none;
-      color: #555; /* Darker color for navigation links */
-      border-radius: 5px;
-      transition: background-color 0.3s ease, color 0.3s ease;
-
-      &:hover {
-        background-color: #e9ecef; /* Light grey hover */
-        color: #333;
-      }
-      &.active {
-        background-color: #007bff; /* A prominent color for the active link */
-        color: #fff; /* White text for active link */
-        font-weight: bold;
-      }
-    }
-  }
-
-  .sidebar-hidden {
-    width: 0;
-    overflow-x: hidden;
-    padding: 0;
-  }
-
-  .main-content {
-    flex-grow: 1;
-    padding: 30px;
-    background-color: #fff;
-    color: #333;
-    transition: margin-left 0.3s ease;
-    padding-top: 80px !important; /* Force top padding to 0 */
-    margin-top: 0 !important; /* Force top margin to 0 */
-  }
-
-  .inner-page-container:not(.sidebar-hidden) .main-content {
-    margin-left: 350px;
-  }
-
-/* NEW: Splitting lines above sections */
-.main-content section + section { /* Targets any section that immediately follows another section */
-  border-top: 1px solid #ddd; /* Subtle light grey line */
-  padding-top: 40px;          /* Space between the line and the section's content */
-  margin-top: 40px;           /* Space between the previous section's content and this line */
-}
-
-.main-content h2 {
-    color: black; // Specific for section headings
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
     margin-bottom: 20px;
-}
-
-.main-content p {
-    color: #555; // Slightly lighter black for body paragraphs
-    line-height: 1.6;
+  }
+  
+  /* --- INNERPAGE PROFILE IMAGE STYLES --- */
+  .profile-image-container { /* This is the wrapper div for the image */
+    width: 150px; /* Adjust size as needed for InnerPage sidebar */
+    height: 150px; /* Adjust size as needed */
+    border-radius: 50%; /* Make it circular */
+    overflow: hidden; /* Clip the image to the circle */
+    margin-bottom: 15px; /* Space below the image */
+    border: 3px solid #ddd; /* A subtle border */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Soft shadow */
+  }
+  
+  .profile-image { /* This is the <img> tag itself */
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the container without distortion */
+    display: block; /* Remove extra space below image */
+  }
+  /* ------------------------------------- */
+  
+  .profile-section h2 {
+    margin: 0;
+    font-size: 1.5em;
+    color: #333;
+  }
+  
+  /* Navigation Styling */
+  .main-navigation ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1; /* Allows navigation to take available space */
+  }
+  
+  .main-navigation li a {
+    display: block;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #555;
+    border-left: 4px solid transparent;
+    transition: all 0.3s ease;
+  }
+  
+  .main-navigation li a:hover {
+    background-color: #e9ecef;
+    color: #007bff;
+    border-left-color: #007bff;
+  }
+  
+  .main-navigation li a.active {
+    background-color: #007bff; /* Active background color */
+    color: white; /* Active text color */
+    border-left-color: #007bff;
     font-weight: bold;
-}
-
-/* Ensure the very first section ("About Me") doesn't get this border/padding/margin */
-.main-content section#about {
-    margin-top: 0;
-    padding-top: 0;
-    border-top: none; /* Explicitly remove if it was somehow applied */
-}
-
-
-  /* Ensure the H2s within sections also have no top margin */
-  .main-content section h2 {
-    margin-top: 0 !important;
-    padding-bottom: 10px;
-    margin-bottom: 25px;
-    font-size: 2em;
-    font-weight: 600;
-    border-bottom: none;
-    color: #333;
   }
-
-  section#education {
-    .education-item {
-      margin-bottom: 20px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #eee;
-      &:last-child {
-        border-bottom: none;
-      }
-
-      h3 {
-        margin-top: 0;
-        margin-bottom: 5px;
-        font-size: 1.2em;
-        font-weight: bold;
-        color: #555;
-      }
-
-      p {
-        margin-bottom: 5px;
-        color: #666;
-
-        &:nth-child(2) {
-          font-style: italic;
-        }
-
-        &:nth-child(3) {
-          font-size: 0.9em;
-          color: #777;
-        }
-      }
-    }
-  }
-
-  section#experience {
-    .experience-item {
-      margin-bottom: 25px;
-      padding-bottom: 25px;
-      border-bottom: 1px solid #eee;
-
-      &:last-child {
-        border-bottom: none;
-      }
-
-      h3 {
-        margin-top: 0;
-        margin-bottom: 5px;
-        font-size: 1.2em;
-        font-weight: bold;
-        color: #555;
-      }
-
-      p {
-        margin-bottom: 5px;
-        color: #666;
-
-        &:nth-child(2) {
-          font-style: italic;
-        }
-
-        &:nth-child(3) {
-          font-size: 0.9em;
-          color: #777;
-        }
-
-        ul {
-          padding-left: 20px;
-          margin-top: 10px;
-          color: #666;
-
-          li {
-            margin-bottom: 5px;
-          }
-        }
-      }
-    }
-  }
-
-  section#skills {
-    .skill-item {
-      margin-bottom: 15px; // Keeping the margin from our last skills update
-
-      .skill-label { // This is what replaced the h3
-        margin-top: 0; // Explicitly set to 0 just in case
-        margin-bottom: 5px;
-        color: #555;
-        font-size: 0.9em;
-      }
-
-      .skill-level-bar {
-        background-color: #ddd;
-        height: 10px;
-        border-radius: 5px;
-        width: 100%;
-        overflow: hidden;
-
-        .skill-level-fill {
-          background-color: #20c997; /* Teal/Green color */
-          height: 100%;
-          border-radius: 5px;
-        }
-      }
-    }
-
-    .skills-container {
-      margin-bottom: 30px; /* Space above the scale */
-    }
-
-    .skill-scale {
-      display: flex;
-      justify-content: space-between;
-      color: #777;
-      font-size: 0.8em;
-    }
-  }
-
-    .skill-scale {
-      display: flex;
-      justify-content: space-between;
-      color: #777;
-      font-size: 0.8em;
-      margin-top: 10px; 
-      padding: 0; 
-    }
   
-
-  
-  @media (max-width: 768px) {
-    
-  }
-
-
-  section#portfolio {
-    .portfolio-item {
-      margin-bottom: 30px;
-      padding-bottom: 30px;
-      border-bottom: 1px solid #eee;
-
-      &:last-child {
-        border-bottom: none;
-      }
-
-      h3 {
-        margin-top: 0;
-        margin-bottom: 10px;
-        font-size: 1.3em;
-        font-weight: bold;
-        color: #555;
-      }
-
-      p {
-        margin-bottom: 10px;
-        color: #666;
-      }
-
-      a {
-        color: #007bff;
-        text-decoration: none;
-
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-    }
-  }
-
-  section#contacts {
-    p {
-      color: #666;
-      margin-bottom: 15px;
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-      margin-bottom: 30px; /* Added spacing below contact list */
-
-      li {
-        margin-bottom: 10px;
-        color: #555;
-
-        strong {
-          font-weight: bold;
-          margin-right: 5px;
-        }
-
-        a {
-          color: #007bff;
-          text-decoration: none;
-
-          &:hover {
-            text-decoration: underline;
-          }
-        }
-      }
-    }
-  }
-
-  section#feedback {
-    .feedback-item {
-      margin-bottom: 20px;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-
-      p:first-child {
-        font-style: italic;
-        color: #555;
-        margin-bottom: 10px;
-      }
-
-      p:last-child {
-        text-align: right;
-        color: #777;
-        font-size: 0.9em;
-      }
-    }
-  }
-
-  
-  section#footer {
-    text-align: center;
+  /* Main Content Area */
+  .main-content {
+    margin-left: 250px; /* Adjust based on sidebar width */
     padding: 20px;
-    background-color: #333;
-    color: #fff;
-
-    p {
-      margin: 0;
-      font-size: 0.9em;
-    }
+    transition: margin-left 0.3s ease-in-out;
+    flex-grow: 1; /* Allows content to take remaining space */
+    background-color: #fff; /* Ensure main content background is white */
+    color: #333; /* Default text color for main content */
   }
-
-  @media (max-width: 768px) {
-    .inner-page-container {
-      flex-direction: column;
-    }
-
-    .sidebar {
-      width: 100%;
-      padding: 20px;
-      align-items: stretch;
-
-      .profile-section {
-        margin-bottom: 20px;
-      }
-
-      .main-navigation ul li a {
-        display: block;
-        width: 100%;
-      }
-    }
-
-    .main-content {
-      padding: 20px;
-      margin-left: 0 !important;
-    }
-
-    .inner-page-container:not(.sidebar-hidden) .main-content {
-      margin-left: 0 !important;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .sidebar .profile-section .profile-image-container {
-      width: 80px;
-      height: 80px;
-    }
-
-    .sidebar .profile-section h2 {
-      font-size: 1.5em;
-    }
-
-    .sidebar .main-navigation ul li a {
-      padding: 10px 15px;
-      font-size: 0.9em;
-    }
-  }
-
-  .sidebar-hidden {
-    width: 0;
-    overflow-x: hidden;
-    padding: 0;
-  }
-
+  
+  /* Adjust margin when sidebar is hidden */
   .inner-page-container.sidebar-hidden .main-content {
-    margin-left: 0;
-    padding-top: 80px;
+      margin-left: 0;
   }
-
-  .main-content section#portfolio .portfolio-filters {
-    margin-bottom: 20px;
+  
+  /* Section styling */
+  section {
+      background-color: white;
+      padding: 30px;
+      margin-bottom: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  
+  section h2 { /* Ensure headings within sections are dark */
+      color: black;
+      margin-bottom: 20px;
+  }
+  
+  section p { /* Ensure paragraphs within sections are dark */
+      color: #555;
+      line-height: 1.6;
+  }
+  
+  /* Skill bars */
+  .edit-skills-header {
     display: flex;
-    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
   }
-
-  .main-content section#portfolio .portfolio-filters button {
-    padding: 8px 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f8f8f8;
+  
+  .edit-skills-header h3 {
+    margin: 0;
     color: #333;
+  }
+  
+  .open-edit-button {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-
-    &:hover {
-      background-color: #ddd;
-      border-color: #bbb;
-    }
-
-    &.active {
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+  }
+  
+  .open-edit-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .skills-form-container {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+    border: 1px solid #e0e0e0;
+  }
+  
+  .skills-form-container .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .skills-form-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .skills-form-container input[type="text"],
+  .skills-form-container input[type="number"] {
+    width: calc(100% - 20px); /* Adjust for padding */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box;
+  }
+  
+  .add-skill-button {
+    background-color: #20c997;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+  }
+  
+  .add-skill-button:hover {
+    background-color: #17a26b;
+  }
+  
+  .skills-display-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  /* Rest of the skills styles from previous turn should remain here */
+  /* Skill bars */
+  .skills-container { /* This needs to be .skills-display-container now if you want separate styling */
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 100%;
+      max-width: 600px; /* Limit width for better appearance */
+      margin: 20px auto; /* Center the skills container */
+      padding: 10px;
+      background-color: #f0f0f0; /* Light background for the container */
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  
+  .skill-item {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+  }
+  
+  .skill-label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #333; /* Dark text for label */
+      display: flex; /* Allow label and percentage to be on one line */
+      justify-content: space-between; /* Push percentage to the right */
+      align-items: baseline;
+  }
+  
+  .skill-label span:last-child { /* Style for the percentage text */
+      font-size: 0.9em;
+      color: #666;
+  }
+  
+  .skill-level-bar {
+      background-color: #e0e0e0;
+      border-radius: 5px;
+      height: 10px;
+      overflow: hidden;
+  }
+  
+  .skill-level-fill {
+      background-color: #20c997; /* Green color for the progress bar */
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.8s ease-in-out; /* Smooth animation */
+  }
+  
+  .skill-scale {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 600px;
+      margin: 10px auto 0; /* Center scale below bars */
+      font-size: 0.9em;
+      color: #555;
+  }
+  
+  
+  /* Portfolio grid */
+  .portfolio-filters {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+  }
+  
+  .portfolio-filters button {
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+  }
+  
+  .portfolio-filters button:hover {
+      background-color: #e0e0e0;
+  }
+  
+  .portfolio-filters button.active {
       background-color: #007bff;
-      color: #fff;
+      color: white;
       border-color: #007bff;
-    }
   }
-
-  .main-content section#portfolio .portfolio-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+  
+  .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
   }
-
+  
+  .portfolio-item {
+      background-color: #f9f9f9;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      text-align: left;
+  }
+  
+  .portfolio-item h3 {
+      margin-top: 0;
+      color: #007bff;
+  }
+  
+  .portfolio-item p {
+      font-size: 0.95em;
+      color: #555;
+  }
+  
+  .portfolio-item a {
+      color: #007bff;
+      text-decoration: none;
+  }
+  
+  .portfolio-item a:hover {
+      text-decoration: underline;
+  }
+  
+  /* Contact form */
+  .contact-form-container {
+      background-color: #f9f9f9;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      max-width: 600px;
+      margin: 30px auto;
+  }
+  
+  .contact-form .form-group {
+      margin-bottom: 15px;
+  }
+  
+  .contact-form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+  }
+  
+  .contact-form input[type="text"],
+  .contact-form input[type="email"],
+  .contact-form textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1em;
+      box-sizing: border-box; /* Include padding in width */
+  }
+  
+  .contact-form textarea {
+      resize: vertical; /* Allow vertical resizing */
+  }
+  
+  .contact-form .submit-button {
+      background-color: #20c997;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1.1em;
+      transition: background-color 0.3s ease;
+  }
+  
+  .contact-form .submit-button:hover {
+      background-color: #17a26b;
+  }
+  
+  /* Back to top button */
   .back-to-top {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5em;
+    line-height: 50px;
+    text-align: center;
+    cursor: pointer;
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 15px;
-    cursor: pointer;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: background-color 0.3s ease;
   }
-
+  
   .back-to-top:hover {
-    opacity: 1;
+    background-color: #0056b3;
   }
-
-/* Styles for the Contact Form */
-.contact-form-container {
-  margin-top: 30px;
-  background-color: #f9f9f9;
-  padding: 25px;
-  border-radius: 8px;
-  border: 1px solid #eee;
-
-  h3 {
-    margin-top: 0;
-    margin-bottom: 25px;
-    font-size: 1.6em;
-    color: #333;
-    text-align: center;
-  }
-}
-
-.contact-form {
-  display: flex;
-  flex-direction: column;
-
-  .form-group {
-    margin-bottom: 15px;
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-      color: #555;
-    }
-
-    input[type="text"],
-    input[type="email"],
-    textarea {
-      width: calc(100% - 20px); /* Account for padding */
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 1em;
-      color: #333;
-      background-color: #fff;
-      &:focus {
-        border-color: #007bff;
-        outline: none;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-      }
-    }
-
-    textarea {
-      resize: vertical; /* Allow vertical resizing */
-      min-height: 100px;
-    }
-  }
-
-  .submit-button {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 5px;
-    font-size: 1.1em;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    align-self: flex-start; /* Align button to the left */
-
-    &:hover {
-      background-color: #0056b3;
-      transform: translateY(-2px);
-    }
-
-    &:active {
-      transform: translateY(0);
-    }
-  }
-}
-
-/* Responsive adjustments for the form */
-@media (max-width: 768px) {
-  .contact-form-container {
-    padding: 15px;
-  }
-
-  .contact-form .form-group {
-    margin-bottom: 10px;
-  }
-
-  .contact-form .submit-button {
-    width: 100%; /* Full width button on smaller screens */
-  }
-}
+  

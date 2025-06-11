@@ -1,20 +1,159 @@
-import { useState, useEffect, createRef } from 'react';
+// src/components/InnerPage.tsx
+import { useState, useEffect, useRef } from 'react';
 import '../styles/InnerPage.scss';
-// import profileImage from '/Sanzhar_Tuibekovv.jpg';
+
+// Import profile image for InnerPage
+import sanzharProfileImage from '/Sanzhar_Tuibekovv.jpg'; // Path to profile image in public folder
+
+// Define types for your data for better TypeScript checking
+interface Education {
+  date: string;
+  title: string;
+  description: string;
+  additional?: string; // Optional field for "1st place..."
+}
+
+interface Skill {
+  name: string;
+  range: number;
+}
+
+// Define type for portfolio items
+interface PortfolioItem {
+  title: string;
+  description: string;
+  link: string;
+  category: string;
+}
 
 function InnerPage() {
-  const sectionRefs = {
-    feedback: createRef<HTMLElement>(),
-    contacts: createRef<HTMLElement>(),
-    skills: createRef<HTMLElement>(), // Added skills property
-  };
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const [filter, setFilter] = useState('All');
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [activeSection, setActiveSection] = useState('about');
+  
+  // State for fetched data, explicitly typed
+  const [educations, setEducations] = useState<Education[]>([]);
+  const [skills, setSkills] = useState<Skill[]>([]);
+  const [loadingEducations, setLoadingEducations] = useState(true);
+  const [loadingSkills, setLoadingSkills] = useState(true);
+  const [errorEducations, setErrorEducations] = useState<string | null>(null);
+  const [errorSkills, setErrorSkills] = useState<string | null>(null);
+
+  // New state for showing/hiding skills form
+  const [showSkillsForm, setShowSkillsForm] = useState(false);
+
+  // State for form inputs (no Formik yet)
+  const [newSkillName, setNewSkillName] = useState('');
+  const [newSkillRange, setNewSkillRange] = useState('');
+
+
+  // Memoize sectionRefs to prevent the useEffect dependency warning
+  const sectionRefs = useRef({
+    about: useRef<HTMLElement>(null),
+    education: useRef<HTMLElement>(null),
+    experience: useRef<HTMLElement>(null),
+    skills: useRef<HTMLElement>(null),
+    portfolio: useRef<HTMLElement>(null),
+    contacts: useRef<HTMLElement>(null),
+    feedback: useRef<HTMLElement>(null),
+  }).current;
 
   const toggleSidebar = () => {
     setIsSidebarVisible(!isSidebarVisible);
   };
+
+  // Handler for adding a new skill (basic for now)
+  const handleAddSkill = async () => {
+    // Basic validation
+    if (!newSkillName.trim() || !newSkillRange.trim()) {
+      alert('Skill name and range are required!'); // Using alert temporarily, will replace with modal later
+      return;
+    }
+    const rangeAsNumber = parseInt(newSkillRange);
+    if (isNaN(rangeAsNumber) || rangeAsNumber < 0 || rangeAsNumber > 100) {
+      alert('Skill range must be a number between 0 and 100!'); // Using alert temporarily
+      return;
+    }
+
+    setLoadingSkills(true); // Indicate loading while adding skill
+    setErrorSkills(null);
+
+    try {
+      const response = await fetch('/api/skills', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: newSkillName, range: rangeAsNumber }),
+      });
+
+      if (!response.ok) {
+        // Attempt to read error message from response
+        const errorData = await response.json();
+        throw new Error(errorData.errors ? errorData.errors.join(', ') : `HTTP error! status: ${response.status}`);
+      }
+
+      // Re-fetch skills to update the list after adding
+      const updatedData = await fetch('/api/skills').then(res => res.json());
+      setSkills(updatedData.skills);
+      setNewSkillName(''); // Clear form fields
+      setNewSkillRange('');
+      setShowSkillsForm(false); // Hide form after successful submission
+    } catch (error) {
+      console.error("Error adding skill:", error);
+      setErrorSkills(error.message);
+    } finally {
+      setLoadingSkills(false);
+    }
+  };
+
+
+  // Fetch Educations
+  useEffect(() => {
+    setLoadingEducations(true);
+    setErrorEducations(null);
+    fetch("/api/educations")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setEducations(data.educations);
+      })
+      .catch((error) => {
+        console.error("Error fetching educations:", error);
+        setErrorEducations(error.message);
+      })
+      .finally(() => {
+        setLoadingEducations(false);
+      });
+  }, []);
+
+  // Fetch Skills
+  useEffect(() => {
+    setLoadingSkills(true);
+    setErrorSkills(null);
+    fetch("/api/skills")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setSkills(data.skills);
+      })
+      .catch((error) => {
+        console.error("Error fetching skills:", error);
+        setErrorSkills(error.message);
+      })
+      .finally(() => {
+        setLoadingSkills(false);
+      });
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,6 +171,37 @@ function InnerPage() {
     };
   }, []);
 
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.2, // Adjusted threshold
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    }, observerOptions);
+
+    Object.values(sectionRefs).forEach((ref) => {
+      if (ref.current) {
+        observer.observe(ref.current);
+      }
+    });
+
+    return () => {
+      Object.values(sectionRefs).forEach((ref) => {
+        if (ref.current) {
+          observer.unobserve(ref.current);
+        }
+      });
+    };
+  }, [sectionRefs]);
+
+
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -39,7 +209,7 @@ function InnerPage() {
     });
   };
 
-  const portfolioItems = [
+  const portfolioItems: PortfolioItem[] = [
     {
       title: 'React SPA for Course Management',
       description: 'Developed a Single-Page Application (SPA) for course management using React. This project features a robust authentication system, allowing users to register, log in, and manage courses. Implemented full CRUD (Create, Read, Update, Delete) operations for courses, interacting seamlessly with a RESTful API. Focused on a responsive user interface and efficient state management for a smooth user experience.',
@@ -55,12 +225,12 @@ function InnerPage() {
     {
       title: 'Interactive JavaScript Practice Projects',
       description: 'A comprehensive collection of interactive exercises and projects built using pure JavaScript, without reliance on external libraries. This repository highlights a strong understanding of fundamental JavaScript concepts, including working with the Document Object Model (DOM), handling various events, and implementing dynamic user interfaces. Each project focuses on practical application of learned concepts.',
-      link: 'https://gitlab.com/me1493243/set-up-a-project-and-its-dependencies',
+      link: 'https://github.com/itu-itis24-tuibekov23/info-systems-project',
       category: 'Code',
     },
     {
       title: 'Canvas-based Mini Game in JS',
-      description: 'A simple yet engaging mini-game developed using vanilla JavaScript, leveraging the HTML Canvas API for graphics rendering. This project demonstrates understanding of game development principles such as collision detection, animation loops, and timer management. It’s a clean implementation focusing on core JavaScript mechanics without external frameworks.',
+      description: 'A simple yet engaging mini-game developed using vanilla JavaScript, leveraging the HTML Canvas API for graphics rendering. This project demonstrates understanding of game development principles suchs as collision detection, animation loops, and timer management. It’s a clean implementation focusing on core JavaScript mechanics without external frameworks.',
       link: 'https://github.com/itu-itis24-tuibekov23/info-systems-project',
       category: 'Code',
     },
@@ -97,7 +267,7 @@ function InnerPage() {
         <div className="profile-section">
           <div className="profile-image-container">
             <img
-              src="/Sanzhar_Tuibekovv.jpg"
+              src={sanzharProfileImage} // Use the imported image variable
               alt="Your Profile"
               className="profile-image"
             />
@@ -107,31 +277,31 @@ function InnerPage() {
         <nav className="main-navigation">
           <ul>
             <li>
-              <a href="#about">👤 About me</a>
+              <a href="#about" className={activeSection === 'about' ? 'active' : ''}>👤 About me</a>
             </li>
             <li>
-              <a href="#education">🎓 Education</a>
+              <a href="#education" className={activeSection === 'education' ? 'active' : ''}>🎓 Education</a>
             </li>
             <li>
-              <a href="#experience">💼 Experience</a>
+              <a href="#experience" className={activeSection === 'experience' ? 'active' : ''}>💼 Experience</a>
             </li>
             <li>
-              <a href="#skills">📊 Skills</a>
+              <a href="#skills" className={activeSection === 'skills' ? 'active' : ''}>📊 Skills</a>
             </li>
             <li>
-              <a href="#portfolio">🖼️ Portfolio</a>
+              <a href="#portfolio" className={activeSection === 'portfolio' ? 'active' : ''}>🖼️ Portfolio</a>
             </li>
             <li>
-              <a href="#contacts">📞 Contacts</a>
+              <a href="#contacts" className={activeSection === 'contacts' ? 'active' : ''}>📞 Contacts</a>
             </li>
             <li>
-              <a href="#feedback">💬 Feedback</a>
+              <a href="#feedback" className={activeSection === 'feedback' ? 'active' : ''}>💬 Feedback</a>
             </li>
           </ul>
         </nav>
       </aside>
       <main className="main-content">
-        <section id="about">
+        <section id="about" ref={sectionRefs.about}>
           <h2>About Me</h2>
           <p>
             Hello! I'm Sanzhar, a passionate programmer with a creative mindset
@@ -144,16 +314,23 @@ function InnerPage() {
             to challenging projects.
           </p>
         </section>
-        <section id="education">
+
+        <section id="education" ref={sectionRefs.education}>
           <h2>Education</h2>
-          <div className="education-item">
-            <h3>Istanbul Technical University</h3>
-            <p>Bachelors, AI and Data Engineering</p>
-            <p>2024 - 2028</p>
-            <p>1st place in International Robotics Competition</p>
-          </div>
+          {loadingEducations && <p>Loading educations...</p>}
+          {errorEducations && <p style={{ color: 'red' }}>Error: {errorEducations}</p>}
+          {!loadingEducations && !errorEducations && educations.length === 0 && <p>No education data found.</p>}
+          {!loadingEducations && !errorEducations && educations.map((edu, index) => (
+            <div key={index} className="education-item">
+              <h3>{edu.title}</h3>
+              <p>{edu.description}</p>
+              <p>{edu.date}</p>
+              {edu.additional && <p>{edu.additional}</p>}
+            </div>
+          ))}
         </section>
-        <section id="experience">
+
+        <section id="experience" ref={sectionRefs.experience}>
           <h2>Experience</h2>
           <div className="experience-item">
             <h3>Front-End Developer Intern</h3>
@@ -182,67 +359,82 @@ function InnerPage() {
 
         <section id="skills" ref={sectionRefs.skills}>
           <h2>Skills</h2>
-          <div className="skills-container">
-            <div className="skill-item">
-              <div className="skill-label">HTML</div>
-              <div className="skill-level-bar">
-                <div className="skill-level-fill" style={{ width: '100%' }}></div>
-              </div>
-            </div>
-            <div className="skill-item">
-              <div className="skill-label">CSS / Tailwind CSS</div>
-              <div className="skill-level-bar">
-                <div className="skill-level-fill" style={{ width: '85%' }}></div>
-              </div>
-            </div>
-            <div className="skill-item">
-              <div className="skill-label">JavaScript (ES6+)</div>
-              <div className="skill-level-bar">
-                <div className="skill-level-fill" style={{ width: '80%' }}></div>
-              </div>
-            </div>
-            <div className="skill-item">
-              <div className="skill-label">React</div>
-              <div className="skill-level-bar">
-                <div className="skill-level-fill" style={{ width: '75%' }}></div>
-              </div>
-            </div>
-            <div className="skill-item">
-              <div className="skill-label">Git & GitHub</div>
-              <div className="skill-level-bar">
-                <div className="skill-level-fill" style={{ width: '90%' }}></div>
-              </div>
-            </div>
-            <div className="skill-item">
-              <div className="skill-label">Figma</div>
-              <div className="skill-level-bar">
-                <div className="skill-level-fill" style={{ width: '90%' }}></div>
-              </div>
-            </div>
+          <p>Proficiency scale: (1) Beginner to (5) Expert</p>
+          {/* Open Edit button */}
+          <div className="edit-skills-header">
+            <h3>Manage Skills</h3>
+            <button onClick={() => setShowSkillsForm(!showSkillsForm)} className="open-edit-button">
+              {showSkillsForm ? 'Close Edit' : 'Open Edit'}
+            </button>
           </div>
+
+          {/* Skills Form (conditionally rendered) */}
+          {showSkillsForm && (
+            <div className="skills-form-container">
+              <div className="form-group">
+                <label htmlFor="skillName">Skill name</label>
+                <input
+                  type="text"
+                  id="skillName"
+                  value={newSkillName}
+                  onChange={(e) => setNewSkillName(e.target.value)}
+                  placeholder="Enter skill name"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="skillRange">Skill range</label>
+                <input
+                  type="number"
+                  id="skillRange"
+                  value={newSkillRange}
+                  onChange={(e) => setNewSkillRange(e.target.value)}
+                  placeholder="Enter skill range (0-100)"
+                />
+              </div>
+              <button onClick={handleAddSkill} className="add-skill-button">
+                Add skill
+              </button>
+            </div>
+          )}
+
+          {loadingSkills && <p>Loading skills...</p>}
+          {errorSkills && <p style={{ color: 'red' }}>Error: {errorSkills}</p>}
+          {!loadingSkills && !errorSkills && skills.length === 0 && <p>No skills data found.</p>}
+          {!loadingSkills && !errorSkills && (
+            <div className="skills-display-container">
+              {skills.map((skill, index) => (
+                <div key={index} className="skill-item">
+                  <span className="skill-label">
+                    {skill.name} <span>{skill.range}%</span>
+                  </span>
+                  <div className="skill-level-bar">
+                    <div className="skill-level-fill" style={{ width: `${skill.range}%` }}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
           <div className="skill-scale">
-            <span>Beginner</span>
-            <span>Proficient</span>
-            <span>Expert</span>
-            <span>Master</span>
+            <span>1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>4</span>
+            <span>5</span>
           </div>
         </section>
 
-
-        <section id="portfolio">
+        <section id="portfolio" ref={sectionRefs.portfolio}>
           <h2>Portfolio</h2>
           <div className="portfolio-filters">
             <button className={filter === 'All' ? 'active' : ''} onClick={() => setFilter('All')}>All</button>
             <button className={filter === 'Code' ? 'active' : ''} onClick={() => setFilter('Code')}>Code</button>
-            {/* If you have UI projects, add a UI button here */}
-            {/* <button className={filter === 'UI' ? 'active' : ''} onClick={() => setFilter('UI')}>UI</button> */}
           </div>
           <div className="portfolio-grid">
             {filteredItems.map((item, index) => (
               <div key={index} className="portfolio-item">
                 <h3>{item.title}</h3>
                 <p>{item.description}</p>
-                <p><a href={item.link}>Code Repository</a></p> {/* Changed text to be more explicit */}
+                <p><a href={item.link} target="_blank" rel="noopener noreferrer">Code Repository</a></p>
               </div>
             ))}
           </div>
@@ -250,7 +442,7 @@ function InnerPage() {
 
         <section id="contacts" ref={sectionRefs.contacts}>
           <h2>Contacts</h2>
-          <p>Feel free to reach out!</p>
+          <p>Feel free to reach out directly or use the form below:</p>
           <ul>
             <li>
               <strong>Phone:</strong> +7 705 388 5779 (WhatsApp)
@@ -265,7 +457,7 @@ function InnerPage() {
               </a>
             </li>
             <li>
-              <a href="https://github.com/itu-itis24-tuibekov23" target="_blank" rel="noopener noreferrer"> 
+              <a href="https://github.com/itu-itis24-tuibekov23" target="_blank" rel="noopener noreferrer">
                 GitHub
               </a>
             </li>
@@ -273,15 +465,14 @@ function InnerPage() {
 
           <div className="contact-form-container">
             <h3>Send a Message</h3>
-            {/* IMPORTANT: Replace 'YOUR_FORMSPREE_FORM_ID' with your actual Formspree form ID */}
-            <form action="https://formspree.io/f/mrbkbjwd" method="POST" className="contact-form">
+            <form action="https://formspree.io/f/mzzgzoyvv" method="POST" className="contact-form">
               <div className="form-group">
                 <label htmlFor="name">Name:</label>
                 <input type="text" id="name" name="name" required />
               </div>
               <div className="form-group">
                 <label htmlFor="email">Email:</label>
-                <input type="email" id="email" name="_replyto" required /> {/* _replyto for Formspree */}
+                <input type="email" id="email" name="_replyto" required />
               </div>
               <div className="form-group">
                 <label htmlFor="message">Message:</label>
@@ -290,31 +481,27 @@ function InnerPage() {
               <button type="submit" className="submit-button">Send Message</button>
             </form>
           </div>
-
         </section>
 
         <section id="feedback" ref={sectionRefs.feedback}>
           <h2>Feedback</h2>
           <div className="feedback-item">
             <p>
-            "Sanzhar is a highly dedicated and detail-oriented developer. 
-            His ability to quickly grasp complex concepts and deliver clean, efficient code is truly impressive. He was a valuable asset to our team."
+              "Sanzhar is a highly dedicated and detail-oriented developer. His ability to quickly grasp complex concepts and deliver clean, efficient code is truly impressive. He was a valuable asset to our team."
             </p>
-            <p>- Developer, Senior Software Engineer</p>
+            <p>- A. Developer, Senior Software Engineer</p>
           </div>
           <div className="feedback-item">
             <p>
-            "Working with Sanzhar on the front-end aspect of our project was a pleasure.
-            He consistently delivered high-quality work and showed great initiative in solving challenges."
+              "Working with Sanzhar on the [mention a type of project if you have a specific one in mind, e.g., 'front-end'] aspect of our project was a pleasure. He consistently delivered high-quality work and showed great initiative in solving challenges."
             </p>
-            <p>- Project Lead, Tech Solutions Inc.</p>
+            <p>- B. Project Lead, Tech Solutions Inc.</p>
           </div>
           <div className="feedback-item">
             <p>
-              "Sanzhar's enthusiasm for learning and his strong problem-solving skills make him stand out. 
-              He's always eager to take on new challenges and contributes positively to any team environment."
+              "Sanzhar's enthusiasm for learning and his strong problem-solving skills make him stand out. He's always eager to take on new challenges and contributes positively to any team environment."
             </p>
-            <p>- Mentor, Front-End Development Program</p>
+            <p>- C. Mentor, Front-End Development Program</p>
           </div>
         </section>
 

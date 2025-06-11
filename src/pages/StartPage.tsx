@@ -1,13 +1,19 @@
 // src/pages/StartPage.tsx
 import { Link } from 'react-router-dom';
-import '../styles/StartPage.scss';
+import '../styles/StartPage.scss'; // CRUCIAL: Import StartPage's specific styles
+
+// Import profile image for explicit use in JSX
+import sanzharProfileImage from '/Sanzhar_Tuibekovv.jpg'; // Path to profile image in public folder (should work now)
+
+// REMOVE: import backgroundImage from '../assets/carlos-ToNQdoVHVJ0-unsplash.jpg'; // No longer needed for background image element
 
 function StartPage() {
   return (
     <div className="start-page">
+      {/* Content for the StartPage */}
       <div className="profile-image-container-startpage">
         <img
-          src="/Sanzhar_Tuibekovv.jpg" // Image from public folder
+          src={sanzharProfileImage} // Use the imported image variable
           alt="Sanzhar Tuibekov"
           className="startpage-profile-image"
         />
