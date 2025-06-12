@@ -1,3 +1,4 @@
+// src/store/index.ts
 import { configureStore } from '@reduxjs/toolkit';
 import educationReducer from './educationSlice';
 import skillsReducer from './skillsSlice';

@@ -1,24 +1,20 @@
-// src/main.tsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
-import './index.css';
-import { BrowserRouter } from 'react-router-dom';
+import App from './App.tsx';
+import './index.css'; // Or your App.css if used globally
+import { Provider } from 'react-redux'; // <-- NEW
+import { store } from './store'; // <-- NEW: Import your Redux store
+import { makeServer } from './services/server'; // <-- NEW: Import makeServer function
+import { BrowserRouter } from 'react-router-dom'; // Already there, but keeping it for context
 
-import { Provider } from 'react-redux';          // ✅ Redux Provider
-import { store } from './store';                // ✅ Redux Store
-
-// Import and initialize the mock server
-import { makeServer } from './services/server.js';
-
-// Only start the server if in development environment
-if (import.meta.env.DEV) {
-  makeServer();
+// Initialize MirageJS server in development
+if (import.meta.env.DEV) { // <-- NEW: Use Vite's environment variable for development mode
+  makeServer(); // <-- NEW: Call to start the mock server
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Provider store={store}>                    {/* ✅ Wrap App in Redux Provider */}
+    <Provider store={store}> {/* <-- NEW: Wrap your App with Redux Provider */}
       <BrowserRouter>
         <App />
       </BrowserRouter>
